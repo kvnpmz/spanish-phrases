@@ -20,7 +20,7 @@ export default function AnswerInput({
                     variant="contained"
                     type="submit"
                     sx={{
-                        marginTop: "2rem",
+                        mt: "2rem",
                         height: "4rem",
                     }}
                     fullWidth

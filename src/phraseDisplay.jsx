@@ -7,23 +7,21 @@ export default function PhraseDisplay({ currentPhrase }) {
     return (
         <Box
             sx={{
-                width: "100%",
-                height: "10rem",
-                overflow: "auto",
+                height: "10rem"
             }}
         >
             <Box
                 sx={{
-                    width: "100%",
-                    height: "3rem",
-                    overflow: "auto",
+                    height: "2.5rem"
                 }}
             >
                 <Typography
                     variant="body1"
                     sx={{
-                        color: "#fff",
                         fontSize: "1rem",
+                        "@media (max-width:600px)": {
+                            fontSize: "0.9rem",
+                        }
                     }}
                 >
                     {currentPhrase.translation}
@@ -32,9 +30,7 @@ export default function PhraseDisplay({ currentPhrase }) {
             <Box
                 sx={{
                     mt: "1rem",
-                    width: "100%",
                     height: "6rem",
-                    overflow: "auto",
                 }}
             >
                 <Typography
@@ -44,7 +40,7 @@ export default function PhraseDisplay({ currentPhrase }) {
                         fontSize: "1.7rem",
                         "@media (max-width:600px)": {
                             fontSize: "1.4rem",
-                        },
+                        }
                     }}
                 >
                     {currentPhrase.text}

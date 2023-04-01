@@ -1,15 +1,19 @@
 import { Typography, Box } from "@mui/material";
 import Check from "@mui/icons-material/Check";
 
-export default function FeedbackDisplay({ previousPhrase, feedback, isFlashing }) {
+export default function FeedbackDisplay({
+    previousPhrase,
+    feedback,
+    isFlashing,
+}) {
     return (
         <>
             {feedback !== null && (
                 <Box
                     sx={{
                         mt: 2,
-                        padding: "2rem",
-                        borderRadius: "4px",
+                        p: "2rem",
+                        borderRadius: "0.25rem",
                         height: "4rem",
                         display: "flex",
                         flexShrink: 0,
@@ -18,11 +22,10 @@ export default function FeedbackDisplay({ previousPhrase, feedback, isFlashing }
                         backgroundColor: isFlashing ? "#5CAEE6" : "#87CEFA",
                     }}
                 >
-                    {feedback === true && (
+                    {feedback ? (
                         <Box
                             sx={{
                                 display: "flex",
-                                flexDirection: "row",
                                 alignItems: "center",
                             }}
                         >
@@ -31,7 +34,7 @@ export default function FeedbackDisplay({ previousPhrase, feedback, isFlashing }
                                 sx={{
                                     fontSize: "1rem",
                                     fontWeight: "bold",
-                                    color: "#000000",
+                                    color: "black",
                                 }}
                             >
                                 {"Correct!"}
@@ -39,30 +42,25 @@ export default function FeedbackDisplay({ previousPhrase, feedback, isFlashing }
                             <Check
                                 sx={{
                                     ml: 1,
-
                                     fontSize: "2rem",
-                                    color: "#000000",
+                                    color: "black",
                                 }}
                             />
                         </Box>
-                    )}
-                    {feedback === false && (
-                        <>
-                            <Typography
-                                variant="h4"
-                                sx={{
-                                    fontSize: "1rem",
-                                    textAlign: "center",
-                                    color: "red",
-                                }}
-                            >
-                                {`Incorrect. The correct answer is '${previousPhrase.answer}.'`}
-                            </Typography>
-                        </>
+                    ) : (
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontSize: "1rem",
+                                textAlign: "center",
+                                color: "red",
+                            }}
+                        >
+                            {`Incorrect. The correct answer is '${previousPhrase.answer}.'`}
+                        </Typography>
                     )}
                 </Box>
             )}
         </>
     );
 }
-

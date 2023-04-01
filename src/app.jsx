@@ -91,7 +91,6 @@ export default function App() {
                             />
                             <FeedbackDisplay
                                 feedback={feedback}
-                                currentPhrase={currentPhrase}
                                 previousPhrase={previousPhrase}
                                 isFlashing={isFlashing}
                             />
