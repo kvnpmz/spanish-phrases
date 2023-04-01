@@ -1,122 +1,105 @@
-import React, { useState } from 'react';
-import { AppBar, Toolbar, CssBaseline, TextField, Button, Typography, Box, Container, Paper, createTheme } from '@mui/material';
-import {ThemeProvider} from '@mui/material/styles';
-import phrases from './phrases';
+import { useState } from "react";
+import { CssBaseline, Box, Grid, Paper } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import phrases from "./phrases";
+import theme from "./theme";
+import shuffleArray from "./shuffleArray";
+import Header from "./header";
+import PhraseDisplay from "./phraseDisplay";
+import AnswerInput from "./answerInput";
+import FeedbackDisplay from "./feedbackDisplay";
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#4caf50',
-    },
-  },
-});
-
-// Fisher-Yates shuffle algorithm
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
-// Shuffle phrases array
 const shuffledPhrases = shuffleArray(phrases);
 
-const App = () => {
-  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
-  const [currentPhrase, setCurrentPhrase] = useState(shuffledPhrases[currentPhraseIndex]);
-  const [userAnswer, setUserAnswer] = useState('');
-  const [feedback, setFeedback] = useState('');
+export default function App() {
+    const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+    const [previousPhrase, setPreviousPhrase] = useState(null);
+    const [currentPhrase, setCurrentPhrase] = useState(
+        shuffledPhrases[currentPhraseIndex]
+    );
+    const [userAnswer, setUserAnswer] = useState("");
+    const [feedback, setFeedback] = useState(null);
+    const [isFlashing, setIsFlashing] = useState(false);
 
-  const handleAnswerChange = (event) => {
-    setUserAnswer(event.target.value.toLowerCase());
-  };
+    const handleAnswerChange = (event) => {
+        const userInputWithoutAccents = removeAccents(event.target.value);
+        setUserAnswer(userInputWithoutAccents.toLowerCase());
+    };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const correctAnswer = currentPhrase.answer.toLowerCase();
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const correctAnswer = currentPhrase.answer.toLowerCase();
+        const userInputWithoutAccents = removeAccents(userAnswer.toLowerCase());
 
-    if (userAnswer === correctAnswer) {
-      setFeedback('Correct!');
-    } else {
-      setFeedback('Incorrect');
-    }
+        if (
+            correctAnswer.localeCompare(userInputWithoutAccents, "es", {
+                sensitivity: "base",
+            }) === 0
+        ) {
+            setFeedback(true);
+        } else {
+            setFeedback(false);
+            setPreviousPhrase(currentPhrase);
+        }
 
-    setUserAnswer('');
-    setCurrentPhraseIndex((currentPhraseIndex + 1) % shuffledPhrases.length);
-    setCurrentPhrase(shuffledPhrases[(currentPhraseIndex + 1) % shuffledPhrases.length]);
-  };
+        setUserAnswer("");
+        setCurrentPhraseIndex(
+            (currentPhraseIndex + 1) % shuffledPhrases.length
+        );
+        setCurrentPhrase(
+            shuffledPhrases[(currentPhraseIndex + 1) % shuffledPhrases.length]
+        );
 
-  return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-  <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Spanish Medical Phrases App
-        </Typography>
-      </Toolbar>
-    </AppBar>
-      <Container maxWidth="sm">
-        <Box mt={4} display="flex" flexDirection="column" alignItems="center">
-          <Paper elevation={3} 
-        sx={{
-            p: '2rem',
-            minWidth: '40rem',
-            maxWidth: '40rem',
-            minHeight: '25rem',
-            maxHeight: '40rem' 
-        }}
-        >
-<Box sx={{ width: '100%', height: '5rem', overflow: 'auto' }}>
-  <Typography variant="h5" gutterBottom>{currentPhrase.text}</Typography>
-</Box>
+        setIsFlashing(true);
+        setTimeout(() => {
+            setIsFlashing(false);
+        }, 300);
+    };
 
-            <form onSubmit={handleSubmit}>
-              <TextField
-                value={userAnswer}
-                onChange={handleAnswerChange}
-                label="Answer"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-              />
-              <Box mt={2}>
-                <Button
-            variant="contained" type="submit"
-  size="large"
- fullWidth color="primary">
-              Submit
-            </Button>
-          </Box>
-        </form>
-{feedback !== '' && (
-  <Box sx={{ 
-    mt: 5,
-    backgroundColor: '#87CEFA',
-    padding: 2,
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}>
-    <Typography variant="h4" sx={{ 
-      fontSize: '1.2rem',
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color: '#000000',
-    }}>
-      {feedback}
-    </Typography>
-  </Box>
-)}
-      </Paper>
-    </Box>
-  </Container>
-</ThemeProvider>
-);
-};
+    const removeAccents = (str) => {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
 
-export default App;
+    return (
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Header />
+            <Grid container spacing={3} justifyContent="center">
+                <Grid item xs={12} sm={10} md={8} lg={6}>
+                    <Box
+                        mt={4}
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                    >
+                        <Paper
+                            elevation={3}
+                            sx={{
+                                p: "2rem",
+                                width: "100%",
+                                minHeight: "30rem",
+                                borderRadius: "2rem",
+                            }}
+                        >
+                            <PhraseDisplay currentPhrase={currentPhrase} />
+                            <AnswerInput
+                                userAnswer={userAnswer}
+                                handleSubmit={(event) => handleSubmit(event)}
+                                handleAnswerChange={(event) =>
+                                    handleAnswerChange(event)
+                                }
+                            />
+                            <FeedbackDisplay
+                                feedback={feedback}
+                                currentPhrase={currentPhrase}
+                                previousPhrase={previousPhrase}
+                                isFlashing={isFlashing}
+                            />
+                        </Paper>
+                    </Box>
+                </Grid>
+            </Grid>
+        </ThemeProvider>
+    );
+}
+
